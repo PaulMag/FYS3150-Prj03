@@ -11,3 +11,12 @@
 *.lai
 *.la
 *.a
+
+# Swap
+*.swp
+
+# Python
+*.pyc
+
+# Executable
+*.x
