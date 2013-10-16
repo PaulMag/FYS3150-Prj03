@@ -1,0 +1,7 @@
+[Meta-information]
+Project name: The solar system.
+Course: FYS3150
+Language: C++
+Source directory: src/
+Build directory: build/
+Libraries: <none>
