@@ -8,7 +8,8 @@ using namespace std;
  * @param y0 Starting y.
  * @param v0 Startinv v.
  */
-CelestialObject(string id, double x0, double y0, double v0) {
+CelestialObject(string id, double m, double x0, double y0, double v0) {
+  m = m;
   x = x0;
   y = y0;
   v = v0;

@@ -5,6 +5,6 @@ class CelestialObject {
     void setF(double); // Save current force
 
   private:
-    double x,y,v,F; // Current x,y position, velocity and force
+    double x,y,v,F,m; // Current x,y position, velocity, force and mass
     string id;
 };
