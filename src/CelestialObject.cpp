@@ -27,4 +27,5 @@ void setF(double newF) { F = newF; }
 double getX() { return x; }
 double getY() { return y; }
 double getV() { return v; }
+double getM() { return m; }
 string getId() { return id; }

@@ -1,7 +1,8 @@
 class CelestialObject {
   public:
     CelestialObject(string,double,double,double);
-    double getX(),getY(),getV(),getF(),getId(); // Get-functions
+    double getX(),getY(),getV(),getF(),getM(); // Get-functions
+    string getId();
     void setF(double); // Save current force
 
   private:
