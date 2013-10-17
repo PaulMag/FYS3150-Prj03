@@ -1,11 +1,27 @@
 #include "SolarSystem.hpp"
 #include "CelestialObject.hpp"
+#include <fstream>
+#include <regex>
 
 /*
- * Constructor
+ * Constructors
+ */
+
+/*
+ * No arg constructor only sets atributes.
  */
 SolarSystem :: SolarSystem() {
   t = 0
+}
+
+/*
+ * Constructor that takes datafile. An already setup system can be read from
+ * this file. Assumes file is in a certain syntax.
+ *
+ * @param systemfile The file to read the system data from.
+ */
+SolarSystem :: SolarSystem(string systemfile) {
+
 }
 
 /*
