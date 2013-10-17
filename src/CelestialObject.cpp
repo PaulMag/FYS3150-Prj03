@@ -19,7 +19,35 @@ CelestialObject(string id, double m, double x0, double y0, double v0) {
 /*
  * Set functions
  */
-void setF(double newF) { F = newF; }
+
+/*
+ * Saves the current force exerted on the this object.
+ *
+ * @param newF The force exerted.
+ */
+void setF(double newF) {
+  F = newF;
+}
+
+/*
+ * Set new positions.
+ *
+ * @param x New x position.
+ * @param y New y position.
+ */
+void setPos(double x, double y) {
+  x = x;
+  y = y;
+}
+
+/*
+ * Updates velocity of object.
+ *
+ * @param newVel The new velocity.
+ */
+void setVel(double newVel) {
+  v = newVel;
+}
 
 /*
  * Get functions
