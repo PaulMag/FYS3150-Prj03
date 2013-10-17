@@ -1,7 +1,6 @@
 #include "SolarSystem.hpp"
-#include "CelestialObject.hpp"
 #include <fstream>
-#include <regex>
+#include <iostream>
 
 /*
  * Constructors
@@ -11,7 +10,7 @@
  * No arg constructor only sets atributes.
  */
 SolarSystem :: SolarSystem() {
-  t = 0
+  t = 0;
 }
 
 /*
@@ -20,8 +19,56 @@ SolarSystem :: SolarSystem() {
  *
  * @param systemfile The file to read the system data from.
  */
-SolarSystem :: SolarSystem(string systemfile) {
+SolarSystem :: SolarSystem(std::string systemfile) {
+  // File relevant
+  std::ifstream datafile;
+  datafile.open(systemfile.c_str());
+  std::string line,col;
 
+  bool record = false; // Switch for knowing when past meta in datafile
+  double x0,y0,v0x,v0y,m;
+  std::string id;
+  int c; // Counter
+  std::vector<std::string> data;
+
+  // Loop through file lines
+  while (std::getline(datafile, line)) {
+    if (std::strcmp(line.c_str(),"#DATA#") == 0) {
+      record = true;
+    }
+    if (record) {
+      c = 0;
+      while (std::getline(datafile, col, ' ')) {
+        /*
+         * There must be a better way to do this
+         */
+        switch (c) {
+          case 0:
+            id = col;
+            break;
+          case 1:
+            x0 = atof(col.c_str());
+            break;
+          case 2:
+            y0 = atof(col.c_str());
+            break;
+          case 3:
+            v0x = atof(col.c_str());
+            break;
+          case 4:
+            v0y = atof(col.c_str());
+            break;
+          case 5:
+            m = atof(col.c_str());
+            break;
+        }
+        c++;
+      }
+      // Completed read of one object, now create it
+      CelestialObject newObject = CelestialObject(id,x0,y0,v0x,v0y,m);
+      addObject(newObject);
+    }
+  }
 }
 
 /*
