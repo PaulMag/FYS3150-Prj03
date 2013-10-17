@@ -1,0 +1,10 @@
+#########################
+Units
+Length: AU
+Time: Years
+Velocity: AU / years
+Mass: kg
+#########################
+ObjectId x0 y0 v0x v0y m
+Sun 0 0 0 0 2e30
+Earth 1 0 0 6.3 6e24
