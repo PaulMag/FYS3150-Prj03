@@ -79,7 +79,14 @@ SolarSystem :: SolarSystem(std::string systemfile) {
  * @param dt The timestep to advance.
  */
 void SolarSystem :: advance(double dt) {
-  //TODO
+  /*
+   * This should be done in stages
+   *
+   * 1: Calculate all forces from everything on everything (except from the
+   * thing onto itself)
+   * 2: One step to find new velocity for everything (both x and y)
+   * 3: One step to find new position for everything (both x and y)
+   */
 
   // After advance
   t += dt;
