@@ -1,10 +1,14 @@
 #include "CelestialObject.hpp"
+#include <stdlib.h>
 
 class SolarSystem {
   public:
-    void addObject(CelestialObject);
-    void advance(double);
+    SolarSystem();
+    void addObject(CelestialObject); // Add a new object
+    void advance(double); // Advance system a time dt
+    int getNoOfObjects(); // Get number of objects
 
   private:
-    CelestialObject* objects; // To contain objects in solar system
+    double t; // Current time
+    vector<CelestialObject> objects; // To contain objects in solar system
 };
