@@ -8,79 +8,125 @@ author: Kristoffer Braekken
 """
 import os,sys,time
 
+class Project(object):
+    """
+    Contains the metainformation from the project.
+    """
+    def __init__(self, metafile):
+        """
+        @param metafile The file containing metainformation for the project.
+        """
+        self.data = {}
+        self._readData(metafile)
+
+    def __call__(self):
+        """
+        Can get hold of dictionairy by calling. This results in shorter code
+        usage.
+        """
+        return self.data
+
+    def _readData(self, metafile):
+        """
+        Stores the data in the instance. Private method.
+
+        @param metafile File containing the data.
+        """
+        reader = open(metafile,'r')
+        reader.readline() # Skip header
+        for line in reader:
+            if len(line.strip().split(':')) == 2:
+                if line.strip().split(':')[0] in ['files','compileFlags','linkFlags','libLocations','libs']:
+                    # Some params are lists
+                    identity = line.strip().split(':')[0]
+                    value = line.strip().split(':')[1]
+                    value = [i.strip() for i in value.strip('[').strip(']').split(',')]
+                    # If only contains empty string, make it empty
+                    if value[0] == '' and value[-1] == '':
+                        value = []
+                else:
+                    identity,value = line.strip().split(':')
+                self.data[identity] = value
+            else:
+                print 'Found line longer or shorter than one separation.'
+                print 'Please correct metafile.'
+                reader.close()
+                sys.exit(1)
+
+        reader.close()
+
 if len(sys.argv) == 1:
     print 'Give name for output exe.'
     sys.exit(1)
 
-xName = sys.argv[1]
-buildPath = 'build/'
-binaryPath = 'src/'
-compileFlags = []
-linkFlags = []
-libLocations = []
-libraries = ['armadillo']
-fileList = ['main.cpp',
-            'JacobiRotationProblem.cpp',
-            'potentials.cpp']
+# Check that metafile is present
+for contents in os.listdir('.'):
+    if contents == 'meta.dat':
+        break;
+    if contents == os.listdir('.')[-1] and contents != 'meta.dat':
+        print 'No meta.dat file found in root of project (or here).'
+        sys.exit(1)
+# Load metafile
+p = Project('meta.dat')
 
 start = time.time()
 
 # Create link and compile flagstrings
 cmpFlagString = ''; lnkFlagString = ''
-for flag in compileFlags:
+for flag in p()['compileFlags']:
     cmpFlagString += '-%s' % flag
-    if not flag == compileFlags[-1]:
+    if not flag == p()['compileFlags'][-1]:
         cmpFlagString += ' '
-for flag in linkFlags:
+for flag in p()['linkFlags']:
     lnkFlagString += '-%s' % flag
-    if not flag == linkFlags[-1]:
+    if not flag == p()['linkFlags'][-1]:
         lnkFlagString += ' '
 
 # Check if executable already present
-for existing_file in os.listdir(buildPath):
-    if existing_file == '%s.x' % xName:
+for existing_file in os.listdir(p()['buildDir']):
+    if existing_file == '%s.x' % p()['exe']:
         # If it is, delete it
-        os.remove('%s%s.x' % (buildPath,xName))
+        os.remove('%s%s.x' % (p()['buildDir'],p()['exe']))
         print 'Deleted old executable.\n'
 
 print 'Compiling files:'
 
 # Compile
-for cfile in fileList:
+for cfile in p()['files']:
     name = cfile.split('.')[0]
 
-    if len(compileFlags) != 0:
-        runstring = 'c++ %s -c %s%s -o %s%s.o' % (cmpFlagString,binaryPath,
-                                                cfile,buildPath,name)
+    if len(p()['compileFlags']) != 0:
+        runstring = 'c++ %s -c %s%s -o %s%s.o' % (cmpFlagString,p()['sourceDir'],
+                                                cfile,p()['buildDir'],name)
     else:
-        runstring = 'c++ -c %s%s -o %s%s.o' % (binaryPath,cfile,buildPath,name)
+        runstring = 'c++ -c %s%s -o %s%s.o' % (p()['sourceDir'],cfile,p()['buildDir'],name)
 
     print runstring, '\n'
     os.system(runstring)
 
 # Link
-if len(linkFlags) != 0:
-    linkstring = 'c++ %s -o %s%s.x ' % (lnkFlagString,buildPath,xName)
+if len(p()['linkFlags']) != 0:
+    linkstring = 'c++ %s -o %s%s ' % (lnkFlagString,p()['buildDir'],p()['exe'])
 else:
-    linkstring = 'c++ -o %s%s.x ' % (buildPath,xName)
+    linkstring = 'c++ -o %s%s ' % (p()['buildDir'],p()['exe'])
 
-if len(libLocations) != 0:
-    for libPath in libLocations:
+if len(p()['libLocations']) != 0:
+    for libPath in p()['libLocations']:
         linkstring += '-L%s ' % libPath
 
-if len(libraries) != 0:
-    for lib in libraries:
+if len(p()['libs']) != 0:
+    for lib in p()['libs']:
         linkstring += '-l%s ' % lib
 
-linkstring += '%s*.o' % buildPath
+linkstring += '%s*.o' % p()['buildDir']
 print 'Now linking:\n',linkstring,'\n'
 os.system(linkstring)
 print ''
 
 # Delete *.o files
-for cfile in fileList:
+for cfile in p()['files']:
     name = cfile.split('.')[0]
-    rmstring = '%s%s.o' % (buildPath,name)
+    rmstring = '%s%s.o' % (p()['buildDir'],name)
     print 'Removing', rmstring
     os.remove(rmstring)
 
