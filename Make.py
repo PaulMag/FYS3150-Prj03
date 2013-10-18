@@ -55,10 +55,6 @@ class Project(object):
 
         reader.close()
 
-if len(sys.argv) == 1:
-    print 'Give name for output exe.'
-    sys.exit(1)
-
 # Check that metafile is present
 for contents in os.listdir('.'):
     if contents == 'meta.dat':
