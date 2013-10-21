@@ -7,6 +7,7 @@
  * Constants
  */
 const double GRAV_CONST = 6.67384e-11; // [m^3 kg^-1 s^-2]
+const int DIMENSIONALITY = 2;
 
 /*
  * Constructors
@@ -17,6 +18,13 @@ const double GRAV_CONST = 6.67384e-11; // [m^3 kg^-1 s^-2]
  */
 SolarSystem :: SolarSystem() {
   t = 0;
+}
+
+/*
+ * Can be initialized at certain time.
+ */
+SolarSystem :: SolarSystem(double t) {
+  t = t;
 }
 
 /*
@@ -84,17 +92,65 @@ SolarSystem :: SolarSystem(std::string systemfile) {
  * This implementation makes it easier to use adaptive methods later since
  * timestep can be varied.
  *
+ * Huge problem in implementation. There are four steps in the Runge Kutta 4
+ * method. For each step you can't only move one object. You have to move them
+ * all so that the all forces follow. Therefore, have to calculate every object
+ * in one go.
+ *
  * @param dt The timestep to advance.
  */
 void SolarSystem :: advance(double dt) {
-  /*
-   * This should be done in stages
-   *
-   * 1: Calculate all forces from everything on everything (except from the
-   * thing onto itself)
-   * 2: One step to find new velocity for everything (both x and y)
-   * 3: One step to find new position for everything (both x and y)
-   */
+  arma::vec force = arma::zeros(DIMENSIONALITY);
+  arma::vec K1,K2,K3,K4,vn,yn = arma::zeros(DIMENSIONALITY,getNoOfObjects());
+  double M;
+
+  // K1 for everybody
+  for (int i = 0; i < getNoOfObjects(); i++) {
+    // Storage
+    vn[i] = objects[i].getV();
+    yn[i] = objects[i].getPos();
+
+    // K1
+    force = getForces(objects[i]);
+    K1[i] = force / objects[i].getM();
+
+    // Move must be done for all before calculating K2
+    objects[i].setV(vn[i] + 0.5*dt*K1[i]);
+    objects[i].setPos(yn[i] + 0.5*dt*objects[i].getV());
+  }
+
+  // K2 for everybody
+  for (int i = 0; i < getNoOfObjects(); i++) {
+    // K2
+    force = getForces(objects[i]);
+    K2[i] = force / objects[i].getM();
+
+    // Again, move before calculating K3
+    objects[i].setV(vn[i] + 0.5*dt*K2[i]);
+    objects[i].setPos(yn[i] + 0.5*dt*objects[i].getV());
+  }
+
+  // K3 for everybody
+  for (int i = 0; i < getNoOfObjects(); i++) {
+    // K3
+    force = getForces(objects[i]);
+    K3[i] = force / objects[i].getM();
+
+    // Move for calculating K4
+    objects[i].setV(vn[i] + dt*K3);
+    objects[i].setPos(yn[i] + dt*objects[i].getV());
+  }
+
+  // K4 for everybody and final real move
+  for (int i = 0; i < getNoOfObjects(); i++) {
+    // K4
+    force = getForces(objects[i]);
+    K4[i] = force / objects[i].getM();
+
+    // Final move
+    objects[i].setV( vn[i] + (1./6) * (K1[i] + 2*K2[i] + 2*K3[i] + K4[i]) );
+    objects[i].setPos( yn[i] + (1./6) * (K1[i] + 2*K2[i] + 2*K3[i] + K4[i]) );
+  }
 
   // After advance
   t += dt;
@@ -118,7 +174,7 @@ void SolarSystem :: addObject(CelestialObject newObject) {
  * all other objects in the system.
  */
 arma::vec SolarSystem :: getForces(CelestialObject object) {
-  arma::vec force = 0; arma::vec r;
+  arma::vec force = arma::zeros(DIMENSIONALITY); arma::vec r;
 
   for (int i = 0; i < getNoOfObjects(); i++) {
     // Not find force from itself
@@ -133,3 +189,4 @@ arma::vec SolarSystem :: getForces(CelestialObject object) {
 }
 
 int SolarSystem :: getNoOfObjects() { return objects.size(); }
+double SolarSystem :: getT() { return t; }
