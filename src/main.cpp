@@ -9,7 +9,7 @@ using namespace arma;
 int main(int argc, char* argv[]) {
   SolarSystem mySystem = SolarSystem("../data/sunEarthSystem.dat");
 
-  if (argc != 2) {
+  if (argc != 3) {
     cout << "Need step size and number of steps." << endl;
     return 1;
   }
