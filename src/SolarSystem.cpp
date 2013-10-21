@@ -1,7 +1,6 @@
-#include "SolarSystem.hpp"
-#include <fstream>
 #include <iostream>
 #include <armadillo>
+#include "SolarSystem.hpp"
 
 /*
  * Constants
