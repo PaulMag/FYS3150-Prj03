@@ -1,6 +1,6 @@
-#include "CelestialObject.hpp"
 #include <vector>
 #include <armadillo>
+#include "CelestialObject.hpp"
 
 class SolarSystem {
   public:
