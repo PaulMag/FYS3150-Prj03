@@ -47,12 +47,12 @@ void CelestialObject :: setV(arma::vec newVel) {
  * @param other The other celestial object to find distance to.
  */
 arma::vec CelestialObject :: getDistTo(CelestialObject other) {
-  arma::vec dist = other.getCoors() - getCoors();
+  arma::vec dist = other.getPos() - getPos();
   return dist;
 }
 
 double CelestialObject :: getM() { return m; }
-arma::vec CelestialObject :: getCoors() { return pos; }
+arma::vec CelestialObject :: getPos() { return pos; }
 arma::vec CelestialObject :: getV() { return v; }
 arma::vec CelestialObject :: getForce() { return F; }
 std::string CelestialObject :: getId() { return id; }
