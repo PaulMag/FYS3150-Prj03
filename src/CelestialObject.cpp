@@ -1,4 +1,5 @@
 #include "CelestialObject.hpp"
+#include <cmath>
 
 /*
  * @param id Short string describing object.
@@ -53,6 +54,18 @@ void CelestialObject :: setVel(double vx, double vy) {
 /*
  * Get functions
  */
+
+/*
+ * Returns the distance from this object to a different one.
+ *
+ * @param other The other celestial object to find distance to.
+ */
+double CelestialObject :: getDistTo(CelestialObject other) {
+  double distX = other.getX() - getX();
+  double distY = other.getY() - getY();
+  return sqrt(distX*distX + distY*distY);
+}
+
 double CelestialObject :: getX() { return x; }
 double CelestialObject :: getY() { return y; }
 double CelestialObject :: getVX() { return vx; }

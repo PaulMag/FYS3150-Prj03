@@ -8,6 +8,7 @@ class CelestialObject {
     void setF(double); // Save current force
     void setPos(double,double); // Set new position
     void setVel(double,double); // Set new velocity
+    double getDistTo(CelestialObject); // Returns distance to other object
 
   private:
     double x,y,vx,vy,F,m; // Current x,y position, velocity, force and mass
