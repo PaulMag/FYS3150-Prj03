@@ -100,56 +100,56 @@ SolarSystem :: SolarSystem(std::string systemfile) {
  * @param dt The timestep to advance.
  */
 void SolarSystem :: advance(double dt) {
-  arma::vec force = arma::zeros(DIMENSIONALITY);
-  arma::vec K1,K2,K3,K4,vn,yn = arma::zeros(DIMENSIONALITY,getNoOfObjects());
   double M;
+  arma::vec force = arma::zeros<arma::vec>(DIMENSIONALITY);
+  arma::mat K1,K2,K3,K4,vn,yn = arma::zeros<arma::mat>(getNoOfObjects(),DIMENSIONALITY);
 
   // K1 for everybody
   for (int i = 0; i < getNoOfObjects(); i++) {
     // Storage
-    vn[i] = objects[i].getV();
-    yn[i] = objects[i].getPos();
+    vn.row(i) = objects[i].getV();
+    yn.row(i) = objects[i].getPos();
 
     // K1
     force = getForces(objects[i]);
-    K1[i] = force / objects[i].getM();
+    K1.row(i) = force / objects[i].getM();
 
     // Move must be done for all before calculating K2
-    objects[i].setV(vn[i] + 0.5*dt*K1[i]);
-    objects[i].setPos(yn[i] + 0.5*dt*objects[i].getV());
+    objects[i].setV(vn.row(i) + 0.5*dt*K1.row(i));
+    objects[i].setPos(yn.row(i) + 0.5*dt*objects[i].getV());
   }
 
   // K2 for everybody
   for (int i = 0; i < getNoOfObjects(); i++) {
     // K2
     force = getForces(objects[i]);
-    K2[i] = force / objects[i].getM();
+    K2.row(i) = force / objects[i].getM();
 
     // Again, move before calculating K3
-    objects[i].setV(vn[i] + 0.5*dt*K2[i]);
-    objects[i].setPos(yn[i] + 0.5*dt*objects[i].getV());
+    objects[i].setV(vn.row(i) + 0.5*dt*K2.row(i));
+    objects[i].setPos(yn.row(i) + 0.5*dt*objects[i].getV());
   }
 
   // K3 for everybody
   for (int i = 0; i < getNoOfObjects(); i++) {
     // K3
     force = getForces(objects[i]);
-    K3[i] = force / objects[i].getM();
+    K3.row(i) = force / objects[i].getM();
 
     // Move for calculating K4
-    objects[i].setV(vn[i] + dt*K3);
-    objects[i].setPos(yn[i] + dt*objects[i].getV());
+    objects[i].setV(vn.row(i) + dt*K3.row(i));
+    objects[i].setPos(yn.row(i) + dt*objects[i].getV());
   }
 
   // K4 for everybody and final real move
   for (int i = 0; i < getNoOfObjects(); i++) {
     // K4
     force = getForces(objects[i]);
-    K4[i] = force / objects[i].getM();
+    K4.row(i) = force / objects[i].getM();
 
     // Final move
-    objects[i].setV( vn[i] + (1./6) * (K1[i] + 2*K2[i] + 2*K3[i] + K4[i]) );
-    objects[i].setPos( yn[i] + (1./6) * (K1[i] + 2*K2[i] + 2*K3[i] + K4[i]) );
+    objects[i].setV( vn.row(i) + (1./6) * (K1.row(i) + 2*K2.row(i) + 2*K3.row(i) + K4.row(i)) );
+    objects[i].setPos( yn.row(i) + (1./6) * (K1.row(i) + 2*K2.row(i) + 2*K3.row(i) + K4.row(i)) );
   }
 
   // After advance
