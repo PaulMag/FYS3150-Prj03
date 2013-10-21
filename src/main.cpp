@@ -1,8 +1,10 @@
 #include <iostream>
-
-#include "SolarSystem.hpp"
+#include <armadillo>
 
 using namespace std;
+using namespace arma;
+
+#include "SolarSystem.hpp"
 
 int main(int argc, char* argv[]) {
   SolarSystem mySystem = SolarSystem("../data/sunEarthSystem.dat");

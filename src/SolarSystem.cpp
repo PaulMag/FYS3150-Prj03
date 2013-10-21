@@ -1,6 +1,12 @@
 #include "SolarSystem.hpp"
 #include <fstream>
 #include <iostream>
+#include <armadillo>
+
+/*
+ * Constants
+ */
+const double GRAV_CONST = 6.67384e-11; // [m^3 kg^-1 s^-2]
 
 /*
  * Constructors
@@ -65,7 +71,9 @@ SolarSystem :: SolarSystem(std::string systemfile) {
         c++;
       }
       // Completed read of one object, now create it
-      CelestialObject newObject = CelestialObject(id,x0,y0,v0x,v0y,m);
+      arma::vec position; position << x0 << y0;
+      arma::vec velocity; velocity << v0x << v0y;
+      CelestialObject newObject = CelestialObject(id,position,velocity,m);
       addObject(newObject);
     }
   }
@@ -104,4 +112,24 @@ void SolarSystem :: addObject(CelestialObject newObject) {
 /*
  * Get functions
  */
+
+/*
+ * Returns a double representing the total force working on this object from
+ * all other objects in the system.
+ */
+arma::vec SolarSystem :: getForces(CelestialObject object) {
+  arma::vec force = 0; arma::vec r;
+
+  for (int i = 0; i < getNoOfObjects(); i++) {
+    // Not find force from itself
+    if (strcmp(objects[i].getId().c_str(),object.getId().c_str()) == 0) { continue; }
+
+    // Gravitational force
+    r = object.getDistTo(objects[i]);
+    force += GRAV_CONST * (object.getM()*objects[i].getM()) / r;
+  }
+
+  return force;
+}
+
 int SolarSystem :: getNoOfObjects() { return objects.size(); }

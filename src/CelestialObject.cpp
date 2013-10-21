@@ -1,18 +1,12 @@
 #include "CelestialObject.hpp"
-#include <cmath>
 
 /*
  * @param id Short string describing object.
- * @param x0 Starting x.
- * @param y0 Starting y.
- * @param v0 Startinv v.
  */
-CelestialObject :: CelestialObject(std::string id, double x0, double y0, double v0x, double v0y, double m) {
+CelestialObject :: CelestialObject(std::string id, arma::vec coors, arma::vec vel, double m) {
   m = m;
-  x = x0;
-  y = y0;
-  vx = v0x;
-  vy = v0y;
+  pos = coors;
+  v = vel;
   id = id;
 }
 
@@ -25,30 +19,22 @@ CelestialObject :: CelestialObject(std::string id, double x0, double y0, double 
  *
  * @param newF The force exerted.
  */
-void CelestialObject :: setF(double newF) {
+void CelestialObject :: setF(arma::vec newF) {
   F = newF;
 }
 
 /*
  * Set new positions.
- *
- * @param x New x position.
- * @param y New y position.
  */
-void CelestialObject :: setPos(double x, double y) {
-  x = x;
-  y = y;
+void CelestialObject :: setPos(arma::vec newPos) {
+  pos = newPos;
 }
 
 /*
  * Updates velocity of object.
- *
- * @param vx Velocity x direction.
- * @param vy Velocity y direction.
  */
-void CelestialObject :: setVel(double vx, double vy) {
-  vx = vx;
-  vy = vy;
+void CelestialObject :: setVel(arma::vec newVel) {
+  v = newVel;
 }
 
 /*
@@ -60,15 +46,13 @@ void CelestialObject :: setVel(double vx, double vy) {
  *
  * @param other The other celestial object to find distance to.
  */
-double CelestialObject :: getDistTo(CelestialObject other) {
-  double distX = other.getX() - getX();
-  double distY = other.getY() - getY();
-  return sqrt(distX*distX + distY*distY);
+arma::vec CelestialObject :: getDistTo(CelestialObject other) {
+  arma::vec dist = other.getCoors() - getCoors();
+  return dist;
 }
 
-double CelestialObject :: getX() { return x; }
-double CelestialObject :: getY() { return y; }
-double CelestialObject :: getVX() { return vx; }
-double CelestialObject :: getVY() { return vy; }
 double CelestialObject :: getM() { return m; }
+arma::vec CelestialObject :: getCoors() { return pos; }
+arma::vec CelestialObject :: getV() { return v; }
+arma::vec CelestialObject :: getForce() { return F; }
 std::string CelestialObject :: getId() { return id; }
