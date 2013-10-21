@@ -8,5 +8,5 @@ libLocations:[]
 sourceDir:src/
 exe:TheSolarSystem.x
 buildDir:build/
-libs:[]
+libs:[armadillo]
 files:[main.cpp, CelestialObject.cpp, SolarSystem.cpp]
