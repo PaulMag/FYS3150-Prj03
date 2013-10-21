@@ -1,5 +1,6 @@
 #include <iostream>
 #include <armadillo>
+#include <sstream>
 #include "SolarSystem.hpp"
 
 /*
@@ -7,6 +8,7 @@
  */
 const double GRAV_CONST = 6.67384e-11; // [m^3 kg^-1 s^-2]
 const int DIMENSIONALITY = 2;
+const std::string DATA_PATH = "../data";
 
 /*
  * Constructors
@@ -149,6 +151,9 @@ void SolarSystem :: advance(double dt) {
     // Final move
     objects[i].setV( vn.row(i) + (1./6) * (K1.row(i) + 2*K2.row(i) + 2*K3.row(i) + K4.row(i)) );
     objects[i].setPos( yn.row(i) + (1./6) * (K1.row(i) + 2*K2.row(i) + 2*K3.row(i) + K4.row(i)) );
+
+    // After final move, save coordinates
+    objects[i].saveCurrentPos();
   }
 
   // After advance
@@ -156,12 +161,17 @@ void SolarSystem :: advance(double dt) {
 }
 
 /*
- * Adds a new celestial object to the collection of objects.
+ * Adds a new celestial object to the collection of objects. This also
+ * automatically sets a savefile for the object.
  *
  * @param newObject The new object. Instance of `CelestialObject`.
  */
 void SolarSystem :: addObject(CelestialObject newObject) {
   objects.push_back(newObject);
+  
+  std::ostringstream oss;
+  oss << DATA_PATH << "/" << newObject.getId() << ".dat";
+  newObject.setSavefile(oss.str());
 }
 
 /*
