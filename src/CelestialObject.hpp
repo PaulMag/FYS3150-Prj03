@@ -11,9 +11,10 @@ class CelestialObject {
     void setV(arma::vec); // Set new velocity
     arma::vec getDistTo(CelestialObject); // Returns distance to other object
     arma::vec getPos(),getV(),getForce();
+    void saveCurrentPos(),setSavefile(std::string);
 
   private:
     double m;
     arma::vec pos,v,F;
-    std::string id;
+    std::string id,savefile;
 };

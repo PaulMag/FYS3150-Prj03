@@ -1,3 +1,5 @@
+#include <fstream>
+#include <iostream>
 #include "CelestialObject.hpp"
 
 /*
@@ -8,6 +10,7 @@ CelestialObject :: CelestialObject(std::string id, arma::vec coors, arma::vec ve
   pos = coors;
   v = vel;
   id = id;
+  savefile = "<not_set>";
 }
 
 /*
@@ -35,6 +38,32 @@ void CelestialObject :: setPos(arma::vec newPos) {
  */
 void CelestialObject :: setV(arma::vec newVel) {
   v = newVel;
+}
+
+/*
+ * Stores name of savefile
+ */
+void CelestialObject :: setSavefile(std::string savefilename) {
+  savefile = savefilename;
+
+  // Write header
+  std::ofstream outfile;
+  outfile.open(savefile.c_str());
+  outfile << "Positions for: " << getId() << std::endl << "#syntax: x y" << std::endl;;
+  outfile.close();
+}
+
+/*
+ * Stores current position to its given savefile. If no savefile is set
+ * function aborts.
+ */
+void CelestialObject :: saveCurrentPos() {
+  if (std::strcmp(savefile.c_str(),"<not_set>") == 0) { return; }
+
+  std::ofstream outfile;
+  outfile.open(savefile.c_str(), std::ios::app);
+  outfile << getPos()[0] << " " << getPos()[1] << std::endl;
+  outfile.close();
 }
 
 /*
