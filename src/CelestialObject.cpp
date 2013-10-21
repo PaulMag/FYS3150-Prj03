@@ -33,7 +33,7 @@ void CelestialObject :: setPos(arma::vec newPos) {
 /*
  * Updates velocity of object.
  */
-void CelestialObject :: setVel(arma::vec newVel) {
+void CelestialObject :: setV(arma::vec newVel) {
   v = newVel;
 }
 
