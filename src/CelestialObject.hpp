@@ -3,7 +3,7 @@
 
 class CelestialObject {
   public:
-    CelestialObject(std::string,arma::vec,arma::vec,double);
+    CelestialObject(std::string,arma::vec,arma::vec,double,std::string);
     double getM(); // Get-functions
     std::string getId();
     void setF(arma::vec); // Save current force
@@ -11,7 +11,7 @@ class CelestialObject {
     void setV(arma::vec); // Set new velocity
     arma::vec getDistTo(CelestialObject); // Returns distance to other object
     arma::vec getPos(),getV(),getForce();
-    void saveCurrentPos(),setSavefile(std::string);
+    void saveCurrentPos();
 
   private:
     double m;

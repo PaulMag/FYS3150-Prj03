@@ -2,15 +2,24 @@
 #include <iostream>
 #include "CelestialObject.hpp"
 
+using namespace std;
+using namespace arma;
+
 /*
  * @param id Short string describing object.
  */
-CelestialObject :: CelestialObject(std::string id, arma::vec coors, arma::vec vel, double m) {
+CelestialObject :: CelestialObject(string id, vec coors, vec vel, double m, string savefile) {
   this->m = m;
   this->pos = coors;
   this->v = vel;
   this->id = id;
-  savefile = "<not_set>";
+  this->savefile = savefile;
+
+  // Write header to savefile
+  ofstream outfile;
+  outfile.open(savefile.c_str());
+  outfile << "Positions for: " << getId() << std::endl << "#syntax: x y" << std::endl;;
+  outfile.close();
 }
 
 /*
@@ -41,26 +50,13 @@ void CelestialObject :: setV(arma::vec newVel) {
 }
 
 /*
- * Stores name of savefile
- */
-void CelestialObject :: setSavefile(std::string savefilename) {
-  savefile = savefilename;
-
-  // Write header
-  std::ofstream outfile;
-  outfile.open(savefile.c_str());
-  outfile << "Positions for: " << getId() << std::endl << "#syntax: x y" << std::endl;;
-  outfile.close();
-}
-
-/*
  * Stores current position to its given savefile. If no savefile is set
  * function aborts.
  */
 void CelestialObject :: saveCurrentPos() {
-  if (std::strcmp(savefile.c_str(),"<not_set>") == 0) { return; }
-
-  std::ofstream outfile;
+  cout << savefile << endl;
+  if (strcmp(savefile.c_str(),"<not_set>") == 0) { return; }
+  ofstream outfile;
   outfile.open(savefile.c_str(), std::ios::app);
   outfile << getPos()[0] << " " << getPos()[1] << std::endl;
   outfile.close();
@@ -76,7 +72,7 @@ void CelestialObject :: saveCurrentPos() {
  * @param other The other celestial object to find distance to.
  */
 arma::vec CelestialObject :: getDistTo(CelestialObject other) {
-  arma::vec dist = other.getPos() - getPos();
+  vec dist = other.getPos() - getPos();
   return dist;
 }
 
