@@ -74,7 +74,7 @@ arma::vec CelestialObject :: getDistTo(CelestialObject other) {
 }
 
 double CelestialObject :: getM() { return m; }
-arma::vec CelestialObject :: getPos() { return pos; }
-arma::vec CelestialObject :: getV() { return v; }
-arma::vec CelestialObject :: getForce() { return F; }
-std::string CelestialObject :: getId() { return id; }
+vec CelestialObject :: getPos() { return pos; }
+vec CelestialObject :: getV() { return v; }
+vec CelestialObject :: getForce() { return F; }
+string CelestialObject :: getId() { return id; }
