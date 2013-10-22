@@ -11,7 +11,7 @@ using namespace arma;
  */
 const double GRAV_CONST = 6.67384e-11; // [m^3 kg^-1 s^-2]
 const int DIMENSIONALITY = 2;
-const string DATA_PATH = "../data";
+const string OBJECTS_DATA_PATH = "../data/objects";
 
 /*
  * Constructors
@@ -60,7 +60,7 @@ SolarSystem :: SolarSystem(string systemfile) {
       vec velocity; velocity << v0x << v0y;
 
       ostringstream oss;
-      oss << DATA_PATH << "/" << id << ".dat";
+      oss << OBJECTS_DATA_PATH << "/" << id << ".dat";
       string savefile = oss.str();
 
       CelestialObject newObject = CelestialObject(id,position,velocity,m,savefile);
@@ -86,12 +86,22 @@ SolarSystem :: SolarSystem(string systemfile) {
 void SolarSystem :: advance(double dt) {
   double M;
   colvec force = zeros<colvec>(DIMENSIONALITY);
-  mat K1 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat K2 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat K3 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat K4 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+
+  // Original position and velocity
   mat yn = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
   mat vn = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+
+  // Ks for velocity integration
+  mat vK1 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat vK2 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat vK3 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat vK4 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+
+  // Ks for position integration
+  mat pK1 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat pK2 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat pK3 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat pK4 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
 
   // K1 for everybody
   for (int i = 0; i < getNoOfObjects(); i++) {
@@ -101,8 +111,10 @@ void SolarSystem :: advance(double dt) {
 
     // K1
     force = getForces(objects[i]);
-    K1.col(i) = force / objects[i].getM();
+    vK1.col(i) = force / objects[i].getM();
+  }
 
+  for (int i = 0; i < getNoOfObjects(); i++) {
     // Move must be done for all before calculating K2
     objects[i].setV(vn.col(i) + 0.5*dt*K1.col(i));
     objects[i].setPos(yn.col(i) + 0.5*dt*objects[i].getV());
@@ -113,7 +125,9 @@ void SolarSystem :: advance(double dt) {
     // K2
     force = getForces(objects[i]);
     K2.col(i) = force / objects[i].getM();
+  }
 
+  for (int i = 0; i < getNoOfObjects(); i++) {
     // Again, move before calculating K3
     objects[i].setV(vn.col(i) + 0.5*dt*K2.col(i));
     objects[i].setPos(yn.col(i) + 0.5*dt*objects[i].getV());
@@ -124,7 +138,9 @@ void SolarSystem :: advance(double dt) {
     // K3
     force = getForces(objects[i]);
     K3.col(i) = force / objects[i].getM();
+  }
 
+  for (int i = 0; i < getNoOfObjects(); i++) {
     // Move for calculating K4
     objects[i].setV(vn.col(i) + dt*K3.col(i));
     objects[i].setPos(yn.col(i) + dt*objects[i].getV());
@@ -135,7 +151,9 @@ void SolarSystem :: advance(double dt) {
     // K4
     force = getForces(objects[i]);
     K4.col(i) = force / objects[i].getM();
+  }
 
+  for (int i = 0; i < getNoOfObjects(); i++) {
     // Final move
     objects[i].setV( vn.col(i) + (1./6) * (K1.col(i) + 2*K2.col(i) + 2*K3.col(i) + K4.col(i)) );
     objects[i].setPos( yn.col(i) + (1./6) * (K1.col(i) + 2*K2.col(i) + 2*K3.col(i) + K4.col(i)) );
@@ -166,7 +184,7 @@ void SolarSystem :: addObject(CelestialObject newObject) {
  * all other objects in the system.
  */
 arma::vec SolarSystem :: getForces(CelestialObject object) {
-  vec force = zeros(DIMENSIONALITY); arma::vec r;
+  vec force = zeros(DIMENSIONALITY); vec r;
 
   for (int i = 0; i < getNoOfObjects(); i++) {
     // Not find force from itself
