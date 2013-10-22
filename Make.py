@@ -55,15 +55,22 @@ class Project(object):
 
         reader.close()
 
+metafile = 'meta.dat'
 # Check that metafile is present
 for contents in os.listdir('.'):
-    if contents == 'meta.dat':
+    if contents == metafile:
         break;
-    if contents == os.listdir('.')[-1] and contents != 'meta.dat':
-        print 'No meta.dat file found in root of project (or here).'
-        sys.exit(1)
+    if contents == os.listdir('.')[-1] and contents != metafile:
+        print 'No meta.dat file found here. Searching root.'
+        for contents in os.listdir('../'):
+            if contents == metafile:
+                metafile = '../meta.dat'
+                break;
+            if contents == os.listdir('.')[-1] and contents != metafile:
+                print 'No metafile found in root neither. Aborting.'
+                sys.exit(1)
 # Load metafile
-p = Project('meta.dat')
+p = Project(metafile)
 
 start = time.time()
 
