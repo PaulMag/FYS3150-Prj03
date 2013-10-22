@@ -6,10 +6,10 @@
  * @param id Short string describing object.
  */
 CelestialObject :: CelestialObject(std::string id, arma::vec coors, arma::vec vel, double m) {
-  m = m;
-  pos = coors;
-  v = vel;
-  id = id;
+  this->m = m;
+  this->pos = coors;
+  this->v = vel;
+  this->id = id;
   savefile = "<not_set>";
 }
 
