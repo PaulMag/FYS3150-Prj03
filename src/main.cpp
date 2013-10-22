@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
   double dt = atof(argv[1]);
   double N = atof(argv[2]);
 
-  for (int i = 0; i < dt*N; i++) {
+  for (int i = 0; i < N; i++) {
     mySystem.advance(dt);
   }
 
