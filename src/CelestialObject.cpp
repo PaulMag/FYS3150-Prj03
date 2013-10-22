@@ -50,12 +50,9 @@ void CelestialObject :: setV(arma::vec newVel) {
 }
 
 /*
- * Stores current position to its given savefile. If no savefile is set
- * function aborts.
+ * Stores current position to its given savefile.
  */
 void CelestialObject :: saveCurrentPos() {
-  cout << savefile << endl;
-  if (strcmp(savefile.c_str(),"<not_set>") == 0) { return; }
   ofstream outfile;
   outfile.open(savefile.c_str(), std::ios::app);
   outfile << getPos()[0] << " " << getPos()[1] << std::endl;
