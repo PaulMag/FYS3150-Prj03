@@ -1,7 +1,7 @@
 #UNITS#
 Length: AU
 Time: Years
-Velocity: AU / years
+Velocity: AU/years
 Mass: kg
 #HEADER#
 ObjectId x0 y0 v0x v0y m
