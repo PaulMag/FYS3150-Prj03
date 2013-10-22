@@ -166,7 +166,7 @@ void SolarSystem :: addObject(CelestialObject newObject) {
  * all other objects in the system.
  */
 arma::vec SolarSystem :: getForces(CelestialObject object) {
-  arma::vec force = arma::zeros(DIMENSIONALITY); arma::vec r;
+  vec force = zeros(DIMENSIONALITY); arma::vec r;
 
   for (int i = 0; i < getNoOfObjects(); i++) {
     // Not find force from itself
