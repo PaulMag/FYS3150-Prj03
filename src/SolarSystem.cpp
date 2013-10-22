@@ -107,33 +107,33 @@ void SolarSystem :: advance(double dt) {
   for (int i = 0; i < getNoOfObjects(); i++) {
     // K2
     force = getForces(objects[i]);
-    K2.row(i) = force / objects[i].getM();
+    K2.col(i) = force / objects[i].getM();
 
     // Again, move before calculating K3
-    objects[i].setV(vn.row(i) + 0.5*dt*K2.row(i));
-    objects[i].setPos(yn.row(i) + 0.5*dt*objects[i].getV());
+    objects[i].setV(vn.col(i) + 0.5*dt*K2.col(i));
+    objects[i].setPos(yn.col(i) + 0.5*dt*objects[i].getV());
   }
 
   // K3 for everybody
   for (int i = 0; i < getNoOfObjects(); i++) {
     // K3
     force = getForces(objects[i]);
-    K3.row(i) = force / objects[i].getM();
+    K3.col(i) = force / objects[i].getM();
 
     // Move for calculating K4
-    objects[i].setV(vn.row(i) + dt*K3.row(i));
-    objects[i].setPos(yn.row(i) + dt*objects[i].getV());
+    objects[i].setV(vn.col(i) + dt*K3.col(i));
+    objects[i].setPos(yn.col(i) + dt*objects[i].getV());
   }
 
   // K4 for everybody and final real move
   for (int i = 0; i < getNoOfObjects(); i++) {
     // K4
     force = getForces(objects[i]);
-    K4.row(i) = force / objects[i].getM();
+    K4.col(i) = force / objects[i].getM();
 
     // Final move
-    objects[i].setV( vn.row(i) + (1./6) * (K1.row(i) + 2*K2.row(i) + 2*K3.row(i) + K4.row(i)) );
-    objects[i].setPos( yn.row(i) + (1./6) * (K1.row(i) + 2*K2.row(i) + 2*K3.row(i) + K4.row(i)) );
+    objects[i].setV( vn.col(i) + (1./6) * (K1.col(i) + 2*K2.col(i) + 2*K3.col(i) + K4.col(i)) );
+    objects[i].setPos( yn.col(i) + (1./6) * (K1.col(i) + 2*K2.col(i) + 2*K3.col(i) + K4.col(i)) );
 
     // After final move, save coordinates
     objects[i].saveCurrentPos();
