@@ -20,6 +20,9 @@ CelestialObject :: CelestialObject(string id, vec coors, vec vel, double m, stri
   outfile.open(savefile.c_str());
   outfile << "Positions for: " << getId() << std::endl << "#syntax: x y" << std::endl;;
   outfile.close();
+
+  // Save first point
+  saveCurrentPos();
 }
 
 /*
