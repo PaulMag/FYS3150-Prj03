@@ -4,13 +4,14 @@
 #include "SolarSystem.hpp"
 
 using namespace std;
+using namespace arma;
 
 /*
  * Constants
  */
 const double GRAV_CONST = 6.67384e-11; // [m^3 kg^-1 s^-2]
 const int DIMENSIONALITY = 2;
-const std::string DATA_PATH = "../data";
+const string DATA_PATH = "../data";
 
 /*
  * Constructors
@@ -27,7 +28,7 @@ SolarSystem :: SolarSystem() {
  * Can be initialized at certain time.
  */
 SolarSystem :: SolarSystem(double t) {
-  t = t;
+  this->t = t;
 }
 
 /*
@@ -52,7 +53,13 @@ SolarSystem :: SolarSystem(std::string systemfile) {
       if (strcmp(line.c_str(),"#DATA#") == 0) { record = true; }
     } else {
       datafile >> id >> x0 >> y0 >> v0x >> v0y >> m;
-      cout << "id: " << id << " m: " << m << endl;
+
+      if (!datafile.good()) { break; }
+
+      vec position; position << x0 << y0;
+      vec velocity; velocity << v0x << v0y;
+      CelestialObject newObject = CelestialObject(id,position,velocity,m);
+      addObject(newObject);
     }
   }
 
@@ -73,22 +80,27 @@ SolarSystem :: SolarSystem(std::string systemfile) {
  */
 void SolarSystem :: advance(double dt) {
   double M;
-  arma::vec force = arma::zeros<arma::vec>(DIMENSIONALITY);
-  arma::mat K1,K2,K3,K4,vn,yn = arma::zeros<arma::mat>(getNoOfObjects(),DIMENSIONALITY);
+  colvec force = zeros<colvec>(DIMENSIONALITY);
+  mat K1 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat K2 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat K3 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat K4 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat yn = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
+  mat vn = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
 
   // K1 for everybody
   for (int i = 0; i < getNoOfObjects(); i++) {
     // Storage
-    vn.row(i) = objects[i].getV();
-    yn.row(i) = objects[i].getPos();
+    vn.col(i) = objects[i].getV();
+    yn.col(i) = objects[i].getPos();
 
     // K1
     force = getForces(objects[i]);
-    K1.row(i) = force / objects[i].getM();
+    K1.col(i) = force / objects[i].getM();
 
     // Move must be done for all before calculating K2
-    objects[i].setV(vn.row(i) + 0.5*dt*K1.row(i));
-    objects[i].setPos(yn.row(i) + 0.5*dt*objects[i].getV());
+    objects[i].setV(vn.col(i) + 0.5*dt*K1.col(i));
+    objects[i].setPos(yn.col(i) + 0.5*dt*objects[i].getV());
   }
 
   // K2 for everybody
@@ -139,8 +151,8 @@ void SolarSystem :: advance(double dt) {
  */
 void SolarSystem :: addObject(CelestialObject newObject) {
   objects.push_back(newObject);
-  
-  std::ostringstream oss;
+
+  ostringstream oss;
   oss << DATA_PATH << "/" << newObject.getId() << ".dat";
   newObject.setSavefile(oss.str());
 }
