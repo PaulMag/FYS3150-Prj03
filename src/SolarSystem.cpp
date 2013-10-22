@@ -3,6 +3,8 @@
 #include <sstream>
 #include "SolarSystem.hpp"
 
+using namespace std;
+
 /*
  * Constants
  */
@@ -36,56 +38,25 @@ SolarSystem :: SolarSystem(double t) {
  */
 SolarSystem :: SolarSystem(std::string systemfile) {
   // File relevant
-  std::ifstream datafile;
+  ifstream datafile;
   datafile.open(systemfile.c_str());
-  std::string line,col;
+  string line,col,id;
 
   bool record = false; // Switch for knowing when past meta in datafile
   double x0,y0,v0x,v0y,m;
-  std::string id;
-  int c; // Counter
-  std::vector<std::string> data;
+  vector<string> data;
 
-  // Loop through file lines
-  while (std::getline(datafile, line)) {
-    if (std::strcmp(line.c_str(),"#DATA#") == 0) {
-      record = true;
-    }
-    if (record) {
-      c = 0;
-      while (std::getline(datafile, col, ' ')) {
-        /*
-         * There must be a better way to do this
-         */
-        switch (c) {
-          case 0:
-            id = col;
-            break;
-          case 1:
-            x0 = atof(col.c_str());
-            break;
-          case 2:
-            y0 = atof(col.c_str());
-            break;
-          case 3:
-            v0x = atof(col.c_str());
-            break;
-          case 4:
-            v0y = atof(col.c_str());
-            break;
-          case 5:
-            m = atof(col.c_str());
-            break;
-        }
-        c++;
-      }
-      // Completed read of one object, now create it
-      arma::vec position; position << x0 << y0;
-      arma::vec velocity; velocity << v0x << v0y;
-      CelestialObject newObject = CelestialObject(id,position,velocity,m);
-      addObject(newObject);
+  while (datafile.good()) {
+    if (!record) {
+      datafile >> line;
+      if (strcmp(line.c_str(),"#DATA#") == 0) { record = true; }
+    } else {
+      datafile >> id >> x0 >> y0 >> v0x >> v0y >> m;
+      cout << "id: " << id << " m: " << m << endl;
     }
   }
+
+  datafile.close();
 }
 
 /*
