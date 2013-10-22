@@ -37,7 +37,7 @@ SolarSystem :: SolarSystem(double t) {
  *
  * @param systemfile The file to read the system data from.
  */
-SolarSystem :: SolarSystem(std::string systemfile) {
+SolarSystem :: SolarSystem(string systemfile) {
   // File relevant
   ifstream datafile;
   datafile.open(systemfile.c_str());
@@ -58,7 +58,12 @@ SolarSystem :: SolarSystem(std::string systemfile) {
 
       vec position; position << x0 << y0;
       vec velocity; velocity << v0x << v0y;
-      CelestialObject newObject = CelestialObject(id,position,velocity,m);
+
+      ostringstream oss;
+      oss << DATA_PATH << "/" << id << ".dat";
+      string savefile = oss.str();
+
+      CelestialObject newObject = CelestialObject(id,position,velocity,m,savefile);
       addObject(newObject);
     }
   }
@@ -144,17 +149,12 @@ void SolarSystem :: advance(double dt) {
 }
 
 /*
- * Adds a new celestial object to the collection of objects. This also
- * automatically sets a savefile for the object.
+ * Adds a new celestial object to the collection of objects.
  *
  * @param newObject The new object. Instance of `CelestialObject`.
  */
 void SolarSystem :: addObject(CelestialObject newObject) {
   objects.push_back(newObject);
-
-  ostringstream oss;
-  oss << DATA_PATH << "/" << newObject.getId() << ".dat";
-  newObject.setSavefile(oss.str());
 }
 
 /*
