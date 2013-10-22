@@ -85,82 +85,17 @@ SolarSystem :: SolarSystem(string systemfile) {
  */
 void SolarSystem :: advance(double dt) {
   double M;
-  colvec force = zeros<colvec>(DIMENSIONALITY);
 
-  // Original position and velocity
-  mat yn = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat vn = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-
-  // Ks for velocity integration
-  mat vK1 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat vK2 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat vK3 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat vK4 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-
-  // Ks for position integration
-  mat pK1 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat pK2 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat pK3 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-  mat pK4 = zeros<mat>(getNoOfObjects(),DIMENSIONALITY);
-
-  // K1 for everybody
+  // Solve once to find all new velocities
   for (int i = 0; i < getNoOfObjects(); i++) {
-    // Storage
     vn.col(i) = objects[i].getV();
-    yn.col(i) = objects[i].getPos();
-
-    // K1
-    force = getForces(objects[i]);
-    vK1.col(i) = force / objects[i].getM();
+    vK1.col(i) = getForces(objects[i]) / objects[i].getM();
   }
-
   for (int i = 0; i < getNoOfObjects(); i++) {
-    // Move must be done for all before calculating K2
-    objects[i].setV(vn.col(i) + 0.5*dt*K1.col(i));
-    objects[i].setPos(yn.col(i) + 0.5*dt*objects[i].getV());
+    objects[i].setV( vn.col(i) + 0.5*dt*vK1.col(i) );
   }
 
-  // K2 for everybody
-  for (int i = 0; i < getNoOfObjects(); i++) {
-    // K2
-    force = getForces(objects[i]);
-    K2.col(i) = force / objects[i].getM();
-  }
-
-  for (int i = 0; i < getNoOfObjects(); i++) {
-    // Again, move before calculating K3
-    objects[i].setV(vn.col(i) + 0.5*dt*K2.col(i));
-    objects[i].setPos(yn.col(i) + 0.5*dt*objects[i].getV());
-  }
-
-  // K3 for everybody
-  for (int i = 0; i < getNoOfObjects(); i++) {
-    // K3
-    force = getForces(objects[i]);
-    K3.col(i) = force / objects[i].getM();
-  }
-
-  for (int i = 0; i < getNoOfObjects(); i++) {
-    // Move for calculating K4
-    objects[i].setV(vn.col(i) + dt*K3.col(i));
-    objects[i].setPos(yn.col(i) + dt*objects[i].getV());
-  }
-
-  // K4 for everybody and final real move
-  for (int i = 0; i < getNoOfObjects(); i++) {
-    // K4
-    force = getForces(objects[i]);
-    K4.col(i) = force / objects[i].getM();
-  }
-
-  for (int i = 0; i < getNoOfObjects(); i++) {
-    // Final move
-    objects[i].setV( vn.col(i) + (1./6) * (K1.col(i) + 2*K2.col(i) + 2*K3.col(i) + K4.col(i)) );
-    objects[i].setPos( yn.col(i) + (1./6) * (K1.col(i) + 2*K2.col(i) + 2*K3.col(i) + K4.col(i)) );
-
-    // After final move, save coordinates
-    objects[i].saveCurrentPos();
-  }
+  // Solve again to find all new positions
 
   // After advance
   t += dt;
